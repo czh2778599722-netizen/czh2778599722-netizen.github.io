@@ -1,0 +1,59 @@
+name: Publish portfolio to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out uploaded files
+        uses: actions/checkout@v4
+      - name: Set up Pages
+        uses: actions/configure-pages@v5
+      - name: Restore asset folders
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p site/{assets,autumn,campaign,cultural,fonts,landing,longform,seasonal}
+          cp index.html site/
+          cp index-*.css index-*.js site/assets/
+          cp alibaba-puhuiti-medium.woff2 alimama-shuhei-bold.woff2 site/fonts/
+          for name in banner barrier cover custom-graphics gift-bag hero-detail key-visual name-card notebook project-introduction sign-in social stamps sticker-one sticker-two table-card vertical wayfinding; do
+            cp "$name.webp" site/autumn/
+          done
+          for name in archive-1-1 archive-1-2 archive-1-3 archive-1-4 archive-2-1 archive-2-2 archive-2-3 archive-2-4 final-review-original finals-original national-day-original nine-subjects-original poster-1 poster-2 poster-3 warm-practice-original winter-breakthrough-original winter-warm-original; do
+            cp "$name.webp" site/campaign/
+          done
+          cp notebook-series.webp site/cultural/
+          for name in finals-practice may-holiday-sprint midterm-review new-semester second-round-review senior-sprint-package winter-warmup; do
+            cp "$name.webp" site/landing/
+          done
+          for name in 2027-summer-internship 2027-teacher-trainee class-teacher-recruitment may-day-teachers open-day-beijing open-day-shijiazhuang shijiazhuang-teacher-clean summer-trainee teacher-interview-warm teacher-interview-wei; do
+            cp "$name.webp" site/longform/
+          done
+          for name in arbor-day chushu dahan gaokao-1-day gaokao-2-days gaokao-3-days gaokao-4-days gaokao-5-days gaokao lichun mid-autumn mothers-day yushui; do
+            cp "$name.webp" site/seasonal/
+          done
+          touch site/.nojekyll
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
