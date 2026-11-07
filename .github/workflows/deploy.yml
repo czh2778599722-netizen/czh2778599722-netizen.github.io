@@ -29,8 +29,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p site/{assets,autumn,campaign,cultural,fonts,landing,longform,seasonal}
+          mkdir -p site/{cover,assets,autumn,campaign,cultural,fonts,landing,longform,seasonal}
           cp index.html site/
+          cp interactive-world.png site/cover/
           cp index-*.css index-*.js site/assets/
           cp alibaba-puhuiti-medium.woff2 alimama-shuhei-bold.woff2 site/fonts/
           for name in banner barrier cover custom-graphics gift-bag hero-detail key-visual name-card notebook project-introduction sign-in social stamps sticker-one sticker-two table-card vertical wayfinding; do
