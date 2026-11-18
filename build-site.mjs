@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const output = join(root, 'site');
-const brandRevision = '?v=2';
+const brandRevision = '?v=3';
 const webp = (names) => names.split(' ').map((name) => `${name}.webp`);
 const rootFiles = await readdir(root);
 const assets = {
@@ -68,6 +68,8 @@ const replacements = [
 const updatedBundle = `import { createBrandCase } from "./brand-case.js${brandRevision}";\n` +
   replacements.reduce((source, [original, replacement]) => replaceOnce(source, original, replacement), baseBundle);
 
+const brandCase = await readFile(join(root, 'brand-case.js'), 'utf8');
+const updatedBrandCase = replaceOnce(brandCase, "'./brand-product-motion.js'", `'./brand-product-motion.js${brandRevision}'`);
 const html = await readFile(join(root, 'index.html'), 'utf8');
 const updatedHtml = replaceOnce(html, `/assets/${baseBundleName}`, `/assets/index-brand.js${brandRevision}`);
 const styledHtml = replaceOnce(
@@ -78,6 +80,7 @@ const styledHtml = replaceOnce(
 
 await Promise.all([
   writeFile(join(output, 'assets', 'index-brand.js'), updatedBundle),
+  writeFile(join(output, 'assets', 'brand-case.js'), updatedBrandCase),
   writeFile(join(output, 'index.html'), styledHtml),
   writeFile(join(output, '.nojekyll'), ''),
 ]);

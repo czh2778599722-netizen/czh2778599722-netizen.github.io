@@ -122,10 +122,8 @@
   transform-origin: 52% 74%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .brand-product[data-playing="true"] .brand-product__art {
-    animation: var(--product-animation) var(--product-duration) ease-in-out both;
-  }
+.brand-product[data-playing="true"] .brand-product__art {
+  animation: var(--product-animation) var(--product-duration) ease-in-out both;
 }
 
 @keyframes assemble-body {
@@ -180,7 +178,7 @@
   74% { transform: translateY(-3%) rotate(2deg); }
 }
 
-@media (hover: none), (pointer: coarse) {
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
   .brand-product-frame__hint-mouse {
     display: none;
   }
@@ -191,8 +189,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .brand-product-frame__hint,
-  .brand-product__trigger {
-    display: none;
+  .brand-product[data-activation="button"] .brand-product__art {
+    /* The base stylesheet disables all animations for reduced motion. */
+    animation: var(--product-animation) var(--product-duration) ease-in-out both !important;
   }
 }

@@ -1,19 +1,21 @@
 export function createBrandProductFrame({ createElement: h, useState }) {
   function Product({ product, frameWidth, frameHeight }) {
-    const [playing, setPlaying] = useState(false);
+    const [activation, setActivation] = useState(null);
     const { label, effect, parts, box: [x, y, width, height] } = product;
+    const playing = activation !== null;
 
     return h('div', {
       className: 'brand-product',
       'data-effect': effect,
       'data-playing': playing,
+      'data-activation': activation,
       style: {
         left: `${x / frameWidth * 100}%`,
         top: `${y / frameHeight * 100}%`,
         width: `${width / frameWidth * 100}%`,
         height: `${height / frameHeight * 100}%`,
       },
-      onAnimationEnd: () => setPlaying(false),
+      onAnimationEnd: () => setActivation(null),
     },
     ...parts.map(({ file, part, box: [partX, partY, partWidth, partHeight] = product.box }) => h('img', {
       key: file,
@@ -39,17 +41,17 @@ export function createBrandProductFrame({ createElement: h, useState }) {
       'aria-label': `播放${label}动效`,
       'aria-pressed': playing,
       onPointerEnter: (event) => {
-        if (event.pointerType === 'mouse') setPlaying(true);
-      },
-      onPointerLeave: (event) => {
-        if (event.pointerType === 'mouse') setPlaying(false);
-      },
-      onBlur: () => setPlaying(false),
-      onClick: (event) => {
-        if (event.detail === 0 || event.nativeEvent.pointerType !== 'mouse') {
-          setPlaying((current) => !current);
+        if (event.pointerType === 'mouse' &&
+            window.matchMedia('(any-hover: hover) and (prefers-reduced-motion: no-preference)').matches) {
+          setActivation((current) => current || 'hover');
         }
       },
+      onPointerLeave: (event) => {
+        if (event.pointerType === 'mouse') {
+          setActivation((current) => current === 'hover' ? null : current);
+        }
+      },
+      onClick: () => setActivation((current) => current === 'button' ? null : 'button'),
     }));
   }
 
