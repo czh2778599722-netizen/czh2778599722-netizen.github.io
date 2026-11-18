@@ -1,0 +1,50 @@
+.project-wall-card--1 .project-wall-art .brand-wall-cover {
+  object-position: center 70%;
+}
+
+.brand-case {
+  width: min(100%, 1680px);
+  margin-inline: auto;
+  background: #fff5d7;
+}
+
+.brand-case-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.brand-case-artwork {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.brand-case-hero {
+  display: grid;
+}
+
+.brand-case-hero > * {
+  grid-area: 1 / 1;
+}
+
+.brand-case-hero .brand-danmaku {
+  --brand-danmaku-background: transparent;
+  align-self: end;
+  min-block-size: 26%;
+}
+
+@media (max-width: 680px), (prefers-reduced-motion: reduce) {
+  .brand-case-hero {
+    display: block;
+  }
+
+  .brand-case-hero .brand-danmaku {
+    --brand-danmaku-background: linear-gradient(#fffdf0, #fff6d4);
+    position: relative;
+    margin-block-start: -11.75%;
+  }
+}

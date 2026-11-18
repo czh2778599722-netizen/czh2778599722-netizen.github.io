@@ -1,0 +1,131 @@
+.brand-danmaku {
+  --brand-danmaku-ink: #743b23;
+  --brand-danmaku-gap: clamp(.7rem, 1.5vw, 1.35rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .35rem;
+  padding: clamp(.65rem, 1.5vw, 1.25rem) clamp(.4rem, 1vw, .85rem) clamp(.85rem, 2.5vw, 1.6rem) 0;
+  color: var(--brand-danmaku-ink);
+  background: var(--brand-danmaku-background, linear-gradient(#fff8de, #fff3c3));
+}
+
+.brand-danmaku__viewport {
+  display: grid;
+  gap: clamp(.5rem, 1.9vw, 1.9rem);
+  container-type: inline-size;
+  overflow: hidden;
+}
+
+.brand-danmaku__track {
+  display: flex;
+  inline-size: max-content;
+  animation: brand-danmaku-scroll 36s linear infinite;
+}
+
+.brand-danmaku__track:nth-child(2) {
+  animation-duration: 40s;
+  animation-direction: reverse;
+  animation-delay: -8s;
+}
+
+.brand-danmaku[data-paused="true"] .brand-danmaku__track {
+  animation-play-state: paused;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .brand-danmaku__viewport:hover .brand-danmaku__track {
+    animation-play-state: paused;
+  }
+}
+
+.brand-danmaku__group {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-around;
+  gap: var(--brand-danmaku-gap);
+  min-inline-size: 100cqw;
+  margin: 0;
+  padding: 0 var(--brand-danmaku-gap) 0 0;
+  list-style: none;
+}
+
+.brand-danmaku__message {
+  max-inline-size: min(40rem, calc(100cqw - 1.35rem));
+  padding: .45em 1.25em;
+  border-radius: 1.5em;
+  background: linear-gradient(180deg, rgba(255, 226, 112, .37), rgba(255, 234, 151, .25));
+  font-size: clamp(.78rem, 1.35vw, 1.18rem);
+  font-weight: 500;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.brand-danmaku__toggle {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border: 1px solid #8b521d4d;
+  border-radius: 50%;
+  padding: 0;
+  background: #fff8d9;
+  color: inherit;
+  cursor: pointer;
+}
+
+.brand-danmaku__toggle:hover {
+  background: #ffecab;
+}
+
+.brand-danmaku__toggle:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.brand-danmaku__toggle span {
+  inline-size: .55rem;
+  block-size: .7rem;
+  border-inline: .13rem solid currentColor;
+}
+
+.brand-danmaku[data-paused="true"] .brand-danmaku__toggle span {
+  inline-size: 0;
+  block-size: 0;
+  margin-inline-start: .18rem;
+  border: .39rem solid transparent;
+  border-inline-start: .64rem solid currentColor;
+  border-inline-end: 0;
+}
+
+@keyframes brand-danmaku-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-danmaku {
+    grid-template-columns: minmax(0, 1fr);
+    padding-inline: .8rem;
+  }
+
+  .brand-danmaku__track {
+    inline-size: auto;
+    animation: none;
+  }
+
+  .brand-danmaku__group {
+    flex: 1;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    min-inline-size: 0;
+    padding: 0;
+  }
+
+  .brand-danmaku__group[aria-hidden="true"],
+  .brand-danmaku__toggle {
+    display: none;
+  }
+}
