@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const output = join(root, 'site');
+const brandRevision = '?v=2';
 const webp = (names) => names.split(' ').map((name) => `${name}.webp`);
 const rootFiles = await readdir(root);
 const assets = {
@@ -16,7 +17,11 @@ const assets = {
   landing: webp('finals-practice may-holiday-sprint midterm-review new-semester second-round-review senior-sprint-package winter-warmup'),
   longform: webp('2027-summer-internship 2027-teacher-trainee class-teacher-recruitment may-day-teachers open-day-beijing open-day-shijiazhuang shijiazhuang-teacher-clean summer-trainee teacher-interview-warm teacher-interview-wei'),
   seasonal: webp('arbor-day chushu dahan gaokao-1-day gaokao-2-days gaokao-3-days gaokao-4-days gaokao-5-days gaokao lichun mid-autumn mothers-day yushui'),
-  brand: ['directory-cover.jpg', ...webp('01-cover 02-hero 03-overview 04-strategy 05-palette 06-logo 07-house 08-graphics 09-flavors-pillow 10-hammer-closing')],
+  brand: [
+    'directory-cover.jpg',
+    ...webp('01-cover 02-hero 03-overview 04-strategy 05-palette 06-logo 07-house 08-graphics 09-flavors-pillow 10-hammer-closing'),
+    ...webp('case-08-base case-09-split-base case-10-split-base house-body house-wall house-roof-left house-roof-top packages-left packages-right cake-1 cake-2 cake-3 cake-4 cake-5 cake-6 pillow-blue pillow-yellow hammer-cyan hammer-green'),
+  ],
 };
 
 await Promise.all(Object.entries(assets).map(async ([folder, files]) => {
@@ -60,15 +65,15 @@ const replacements = [
   ['e.id===`autumn-event`?(0,p.jsxs)(p.Fragment,{children:[`活动视觉`,(0,p.jsx)(`br`,{}),`项目`]}):e.title', 'e.title'],
 ];
 
-const updatedBundle = 'import { createBrandCase } from "./brand-case.js";\n' +
+const updatedBundle = `import { createBrandCase } from "./brand-case.js${brandRevision}";\n` +
   replacements.reduce((source, [original, replacement]) => replaceOnce(source, original, replacement), baseBundle);
 
 const html = await readFile(join(root, 'index.html'), 'utf8');
-const updatedHtml = replaceOnce(html, `/assets/${baseBundleName}`, '/assets/index-brand.js');
+const updatedHtml = replaceOnce(html, `/assets/${baseBundleName}`, `/assets/index-brand.js${brandRevision}`);
 const styledHtml = replaceOnce(
   updatedHtml,
   '  </head>',
-  '    <link rel="stylesheet" href="/assets/brand-case.css" />\n    <link rel="stylesheet" href="/assets/brand-danmaku.css" />\n  </head>',
+  `    <link rel="stylesheet" href="/assets/brand-case.css" />\n    <link rel="stylesheet" href="/assets/brand-danmaku.css" />\n    <link rel="stylesheet" href="/assets/brand-product-motion.css${brandRevision}" />\n  </head>`,
 );
 
 await Promise.all([
