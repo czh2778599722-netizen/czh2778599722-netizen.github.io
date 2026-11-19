@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const output = join(root, 'site');
-const brandRevision = '?v=8';
+const brandRevision = '?v=9';
 const webp = (names) => names.split(' ').map((name) => `${name}.webp`);
 const rootFiles = await readdir(root);
 const assets = {
@@ -48,6 +48,10 @@ function replaceOnce(source, original, replacement) {
 const baseBundleName = 'index-DyPDV1vn.js';
 const baseBundle = await readFile(join(root, baseBundleName), 'utf8');
 const replacements = [
+  [
+    '].map(([e,t,n=`webp`])=>({id:e,title:t,src:`/campaign/${e}.${n}`}))',
+    '].map(([e,t])=>({id:e,title:t,src:`/campaign/${e}.webp`}))',
+  ],
   [
     'function Oe(){let[e,t]=(0,l.useState)(null),n=(0,l.useCallback)(()=>t(null),[]);',
     'function Oe(){let[e,selectProject]=(0,l.useState)(null),t=index=>{if(index===0)unlockHouseSound();selectProject(index)},n=(0,l.useCallback)(()=>selectProject(null),[]);',
