@@ -62,6 +62,11 @@
   pointer-events: none;
 }
 
+.brand-house__animation {
+  top: auto;
+  height: auto;
+}
+
 .brand-product[data-effect="packages"] {
   --product-duration: 2.2s;
 }

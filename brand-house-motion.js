@@ -1,7 +1,8 @@
 import { playHouseSnap, stopHouseSound, unlockHouseSound } from './brand-house-sound.js';
 
 const frameWidth = 939;
-const frameHeight = 594;
+// The atlas includes space above the resting house for the far roof's rotation.
+const frameHeight = 690;
 const framesPerSecond = 24;
 const firstContact = 18;
 const secondContact = 31;
@@ -121,6 +122,7 @@ export function createHouseAssembly({ createElement: h, useEffect, useRef, useSt
         className: 'brand-house__animation', 'aria-hidden': true }),
       h('button', {
         type: 'button', className: 'brand-product__trigger',
+        style: phase === 'playing' ? { top: 'auto', height: 'auto', aspectRatio: `${frameWidth} / ${frameHeight}` } : undefined,
         'aria-label': `播放${product.label}动效`,
         'aria-pressed': phase === 'playing' || phase === 'loading',
         onPointerEnter: (event) => {
