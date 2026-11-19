@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const output = join(root, 'site');
-const brandRevision = '?v=7';
+const brandRevision = '?v=8';
 const webp = (names) => names.split(' ').map((name) => `${name}.webp`);
 const rootFiles = await readdir(root);
 const assets = {
@@ -20,6 +20,7 @@ const assets = {
   brand: [
     'directory-cover.jpg',
     'gift-box-film.mp4', 'gift-box-film-poster.webp',
+    'house-assembly-1.webp', 'house-assembly-2.webp',
     ...webp('01-cover 02-hero 03-overview 04-strategy 05-palette 06-logo 07-house 08-graphics 09-flavors-pillow 10-hammer-closing'),
     ...webp('case-08-base case-09-split-base case-10-split-base house-body house-wall house-roof-left house-roof-top packages-left packages-right cake-1 cake-2 cake-3 cake-4 cake-5 cake-6 pillow-blue pillow-yellow hammer-cyan hammer-green'),
   ],
@@ -47,6 +48,10 @@ function replaceOnce(source, original, replacement) {
 const baseBundleName = 'index-DyPDV1vn.js';
 const baseBundle = await readFile(join(root, baseBundleName), 'utf8');
 const replacements = [
+  [
+    'function Oe(){let[e,t]=(0,l.useState)(null),n=(0,l.useCallback)(()=>t(null),[]);',
+    'function Oe(){let[e,selectProject]=(0,l.useState)(null),t=index=>{if(index===0)unlockHouseSound();selectProject(index)},n=(0,l.useCallback)(()=>selectProject(null),[]);',
+  ],
   ['name:`活动视觉项目`,x:.058', 'name:`品牌设计`,x:.058'],
   [
     'var we=[{id:`autumn-event`,number:1,title:`别暑迎秋`,en:`A New Season, A Shared Direction`,category:`活动视觉项目`,tag:`EVENT VISUAL / 2026`,subtitle:`会议视觉与伴手礼文创设计`,cover:`key-visual`,prototype:!1}',
@@ -69,21 +74,27 @@ const replacements = [
 ];
 
 const updatedBundle = `import { createBrandCase } from "./brand-case.js${brandRevision}";\n` +
+  `import { unlockHouseSound } from "./brand-house-sound.js${brandRevision}";\n` +
   replacements.reduce((source, [original, replacement]) => replaceOnce(source, original, replacement), baseBundle);
 
-const brandCase = await readFile(join(root, 'brand-case.js'), 'utf8');
-const updatedBrandCase = replaceOnce(brandCase, "'./brand-product-motion.js'", `'./brand-product-motion.js${brandRevision}'`);
+async function writeVersionedModule(file, dependency) {
+  const source = await readFile(join(root, file), 'utf8');
+  const updated = replaceOnce(source, `'./${dependency}'`, `'./${dependency}${brandRevision}'`);
+  await writeFile(join(output, 'assets', file), updated);
+}
 const html = await readFile(join(root, 'index.html'), 'utf8');
 const updatedHtml = replaceOnce(html, `/assets/${baseBundleName}`, `/assets/index-brand.js${brandRevision}`);
 const styledHtml = replaceOnce(
   updatedHtml,
   '  </head>',
-  `    <link rel="stylesheet" href="/assets/brand-case.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-danmaku.css" />\n    <link rel="stylesheet" href="/assets/brand-product-motion.css${brandRevision}" />\n  </head>`,
+  `    <link rel="stylesheet" href="/assets/brand-case.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-danmaku.css" />\n    <link rel="stylesheet" href="/assets/brand-product-motion.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-campaign-theme.css${brandRevision}" />\n  </head>`,
 );
 
 await Promise.all([
   writeFile(join(output, 'assets', 'index-brand.js'), updatedBundle),
-  writeFile(join(output, 'assets', 'brand-case.js'), updatedBrandCase),
+  writeVersionedModule('brand-case.js', 'brand-product-motion.js'),
+  writeVersionedModule('brand-product-motion.js', 'brand-house-motion.js'),
+  writeVersionedModule('brand-house-motion.js', 'brand-house-sound.js'),
   writeFile(join(output, 'index.html'), styledHtml),
   writeFile(join(output, '.nojekyll'), ''),
 ]);

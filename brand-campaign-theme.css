@@ -1,0 +1,129 @@
+.native-project-viewer:has(> .operations-case) {
+  --campaign-foreground: #f4f4f5;
+  --campaign-secondary: #b9b9c4;
+  --campaign-divider: #3b3b45;
+  color: var(--campaign-foreground);
+  color-scheme: dark;
+  background: #000;
+}
+
+.native-project-viewer:has(> .operations-case) > :is(.viewer-nav, .viewer-end) {
+  color: var(--campaign-foreground);
+  background: #000;
+  border-color: var(--campaign-divider);
+}
+
+.native-project-viewer:has(> .operations-case) > .viewer-end {
+  border-top: 1px solid var(--campaign-divider);
+}
+
+.native-project-viewer:has(> .operations-case) > .viewer-end:hover {
+  background: #141417;
+}
+
+.operations-case {
+  --campaign-accent: #d8c4ff;
+  --campaign-label-surface: #21182e;
+  color: var(--campaign-foreground);
+  background: #000;
+}
+
+.operations-case .poster-collection-longform {
+  --campaign-accent: #b1e2ec;
+  --campaign-label-surface: #13272b;
+}
+
+.operations-case .poster-collection-landing {
+  --campaign-accent: #f0c5f2;
+  --campaign-label-surface: #2a1a2c;
+}
+
+.operations-case .seasonal-panel {
+  --campaign-accent: #a9e1d8;
+  --campaign-label-surface: #142724;
+}
+
+.operations-case :is(
+  .operations-kicker,
+  .operations-intro h1 > span,
+  .operations-intro > p,
+  .operations-section-heading > div > span,
+  .operations-section-heading > p,
+  .operations-tabs > button,
+  .campaign-archive-heading h3,
+  .campaign-archive-heading > span,
+  .campaign-archive-story > span:first-child,
+  .campaign-archive-story p,
+  .campaign-archive-count small,
+  .campaign-current-title > span,
+  .campaign-play,
+  .archive-caption > small
+) {
+  color: var(--campaign-secondary);
+}
+
+.operations-case .operations-tabs > button[aria-selected="true"],
+.operations-case :is(.campaign-archive-count, .archive-caption) {
+  color: var(--campaign-foreground);
+}
+
+.operations-case .operations-tabs [aria-selected="true"]::after {
+  background: var(--campaign-foreground);
+}
+
+.operations-case :is(.operations-tabs-wrap, .campaign-archive-heading) {
+  border-color: var(--campaign-divider);
+}
+
+.operations-case .operations-tabs-wrap {
+  scrollbar-color: #82828f transparent;
+}
+
+.operations-case .campaign-showcase {
+  background: none;
+}
+
+.operations-case .campaign-float-label {
+  background: var(--campaign-label-surface);
+  border-color: var(--campaign-divider);
+  box-shadow: 0 10px 25px #0008;
+}
+
+.operations-case :is(.campaign-float-label, .campaign-float-label > span, .campaign-current-title > button) {
+  color: var(--campaign-accent);
+}
+
+.operations-case .campaign-step-controls > button {
+  border-color: #82828f;
+}
+
+.operations-case .campaign-step-controls > button:hover {
+  background: #24242b;
+}
+
+.operations-case .campaign-dots > button {
+  background: #82828f;
+}
+
+.operations-case .campaign-dots > button.selected {
+  background: var(--campaign-accent);
+}
+
+.operations-case .archive-image i {
+  color: #211f27;
+}
+
+.operations-case button:focus-visible,
+.native-project-viewer:has(> .operations-case) > .viewer-nav button:focus-visible,
+.native-project-viewer:has(> .operations-case) > .viewer-end:focus-visible {
+  outline: 2px solid #d8c4ff;
+  outline-offset: 4px;
+}
+
+body:has(.native-project-viewer > .operations-case) > .poster-lightbox {
+  background: #000;
+}
+
+body:has(.native-project-viewer > .operations-case) .poster-lightbox-controls > span {
+  color: #b9b9c4;
+}

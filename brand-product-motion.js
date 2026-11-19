@@ -1,23 +1,12 @@
-export function createBrandProductFrame({ createElement: h, useState }) {
-  function Product({ product, frameWidth, frameHeight }) {
-    const [activation, setActivation] = useState(null);
-    const { label, effect, parts, box: [x, y, width, height] } = product;
-    const playing = activation !== null;
+import { createHouseAssembly } from './brand-house-motion.js';
 
-    return h('div', {
-      className: 'brand-product',
-      'data-effect': effect,
-      'data-playing': playing,
-      'data-activation': activation,
-      style: {
-        left: `${x / frameWidth * 100}%`,
-        top: `${y / frameHeight * 100}%`,
-        width: `${width / frameWidth * 100}%`,
-        height: `${height / frameHeight * 100}%`,
-      },
-      onAnimationEnd: () => setActivation(null),
-    },
-    ...parts.map(({ file, part, box: [partX, partY, partWidth, partHeight] = product.box }) => h('img', {
+export function createBrandProductFrame(React) {
+  const { createElement: h, useState } = React;
+  const HouseAssembly = createHouseAssembly(React);
+
+  function productArtwork(product) {
+    const [x, y, width, height] = product.box;
+    return product.parts.map(({ file, part, box: [partX, partY, partWidth, partHeight] = product.box }) => h('img', {
       key: file,
       className: 'brand-product__art',
       'data-part': part,
@@ -34,7 +23,23 @@ export function createBrandProductFrame({ createElement: h, useState }) {
       loading: 'lazy',
       decoding: 'async',
       draggable: false,
-    })),
+    }));
+  }
+
+  function Product({ product, style, children }) {
+    const [activation, setActivation] = useState(null);
+    const { label, effect } = product;
+    const playing = activation !== null;
+
+    return h('div', {
+      className: 'brand-product',
+      'data-effect': effect,
+      'data-playing': playing,
+      'data-activation': activation,
+      style,
+      onAnimationEnd: () => setActivation(null),
+    },
+    children,
     h('button', {
       type: 'button',
       className: 'brand-product__trigger',
@@ -62,12 +67,19 @@ export function createBrandProductFrame({ createElement: h, useState }) {
         h('span', { className: 'brand-product-frame__hint-mouse' }, '悬停单品查看动效'),
         h('span', { className: 'brand-product-frame__hint-touch' }, '点按单品查看动效'),
       ),
-      products.map((product) => h(Product, {
-        key: product.id,
-        product,
-        frameWidth: width,
-        frameHeight: height,
-      })),
+      products.map((product) => {
+        const [x, y, productWidth, productHeight] = product.box;
+        return h(product.effect === 'house' ? HouseAssembly : Product, {
+          key: product.id,
+          product,
+          style: {
+            left: `${x / width * 100}%`,
+            top: `${y / height * 100}%`,
+            width: `${productWidth / width * 100}%`,
+            height: `${productHeight / height * 100}%`,
+          },
+        }, productArtwork(product));
+      }),
     );
   };
 }
