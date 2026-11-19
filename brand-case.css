@@ -5,6 +5,9 @@
 .brand-case {
   width: min(100%, 1680px);
   margin-inline: auto;
+}
+
+.brand-case-artboards {
   background: #fff5d7;
 }
 

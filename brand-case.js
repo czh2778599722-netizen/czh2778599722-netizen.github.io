@@ -11,6 +11,19 @@ const caseStudy = [
   ['07-house.webp', '礼盒组合｜一份礼盒，三重心意', 1920, 1080],
 ];
 
+const stationeryCase = [
+  ['exam-kit/01.webp', '逐星未来式｜新生文具礼盒套装封面', 1920, 1080],
+  ['exam-kit/02.webp', '五件套礼盒清单｜手提袋、笔记本、计划本、贴纸和中性笔', 1920, 1080],
+  ['exam-kit/03.webp', '项目背景与设计挑战', 1920, 1080],
+  ['exam-kit/04.webp', '用户分析与需求洞察｜新初一学生、新高一学生与家长', 1920, 1080],
+  ['exam-kit/05.webp', '蓝底品牌标志｜TO SHINE · 逐星未来式', 1920, 737],
+  ['exam-kit/06.webp', '礼盒细节｜铝膜气泡袋、定制手提袋与逐星笔记本', 1920, 2160],
+  ['exam-kit/07.webp', '礼盒细节｜逐星计划本与新高一航天主题贴纸', 1920, 2160],
+  ['exam-kit/08.webp', '礼盒细节｜新初一定制贴纸与航天系列中性笔', 1920, 2160],
+  ['exam-kit/09.webp', '差异化方案与场景适配｜分年级展示线上和线下套装搭配', 1920, 2160],
+  ['exam-kit/10.webp', '成本控制与生产落地｜线下套装每套 28.90 元，线上套装每套 29.40 元', 1920, 1080],
+];
+
 function product(id, label, effect, box, parts = [{ file: `${id}.webp` }]) {
   return { id, label, effect, box, parts };
 }
@@ -85,7 +98,7 @@ export function createBrandCase(React) {
     });
   }
 
-  return function BrandCase() {
+  function MidAutumnCase() {
     return h('article', { className: 'brand-case' },
       h('h1', { className: 'brand-case-title' }, '在一起过中秋'),
       h('div', { className: 'brand-case-artboards' },
@@ -114,6 +127,16 @@ export function createBrandCase(React) {
           poster: '/brand/gift-box-film-poster.webp',
           src: '/brand/gift-box-film.mp4',
         }),
+      ),
+    );
+  }
+
+  return function BrandCase() {
+    return h(React.Fragment, null,
+      h(MidAutumnCase),
+      h('article', { className: 'brand-case', 'aria-labelledby': 'stationery-case-title' },
+        h('h2', { id: 'stationery-case-title', className: 'brand-case-title' }, '逐星未来式｜新生文具礼盒套装'),
+        ...stationeryCase.map((frame) => artwork(frame)),
       ),
     );
   };

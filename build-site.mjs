@@ -1,10 +1,10 @@
-import { copyFile, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { copyFile, cp, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const output = join(root, 'site');
-const brandRevision = '?v=6';
+const brandRevision = '?v=7';
 const webp = (names) => names.split(' ').map((name) => `${name}.webp`);
 const rootFiles = await readdir(root);
 const assets = {
@@ -32,6 +32,8 @@ await Promise.all(Object.entries(assets).map(async ([folder, files]) => {
   await Promise.all(files.map((file) => copyFile(join(source, file), join(destination, file))));
 }));
 
+await cp(join(root, 'brand', 'exam-kit'), join(output, 'brand', 'exam-kit'), { recursive: true });
+
 function replaceOnce(source, original, replacement) {
   const index = source.indexOf(original);
   if (index === -1 || index !== source.lastIndexOf(original)) {
@@ -48,7 +50,7 @@ const replacements = [
   ['name:`活动视觉项目`,x:.058', 'name:`品牌设计`,x:.058'],
   [
     'var we=[{id:`autumn-event`,number:1,title:`别暑迎秋`,en:`A New Season, A Shared Direction`,category:`活动视觉项目`,tag:`EVENT VISUAL / 2026`,subtitle:`会议视觉与伴手礼文创设计`,cover:`key-visual`,prototype:!1}',
-    'const BrandCase=createBrandCase(l);\nvar we=[{id:`brand-design`,number:1,title:`品牌设计`,en:`Brand Design`,category:`品牌设计`,tag:`BRAND DESIGN / 2025`,subtitle:`在一起过中秋 · 中秋礼盒设计`,cover:`/brand/directory-cover.jpg`,prototype:!1}',
+    'const BrandCase=createBrandCase(l);\nvar we=[{id:`brand-design`,number:1,title:`品牌设计`,en:`Brand Design`,category:`品牌设计`,tag:`BRAND DESIGN / 2025`,subtitle:`在一起过中秋 · 逐星未来式`,cover:`/brand/directory-cover.jpg`,prototype:!1}',
   ],
   [
     'function Ee({project:e,asset:t,alt:n=``,lazy:r=!0}){return ',
