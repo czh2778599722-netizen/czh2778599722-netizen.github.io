@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const output = join(root, 'site');
-const brandRevision = '?v=3';
+const brandRevision = '?v=4';
 const webp = (names) => names.split(' ').map((name) => `${name}.webp`);
 const rootFiles = await readdir(root);
 const assets = {
@@ -19,6 +19,7 @@ const assets = {
   seasonal: webp('arbor-day chushu dahan gaokao-1-day gaokao-2-days gaokao-3-days gaokao-4-days gaokao-5-days gaokao lichun mid-autumn mothers-day yushui'),
   brand: [
     'directory-cover.jpg',
+    'gift-box-film.mp4', 'gift-box-film-poster.webp',
     ...webp('01-cover 02-hero 03-overview 04-strategy 05-palette 06-logo 07-house 08-graphics 09-flavors-pillow 10-hammer-closing'),
     ...webp('case-08-base case-09-split-base case-10-split-base house-body house-wall house-roof-left house-roof-top packages-left packages-right cake-1 cake-2 cake-3 cake-4 cake-5 cake-6 pillow-blue pillow-yellow hammer-cyan hammer-green'),
   ],
@@ -75,7 +76,7 @@ const updatedHtml = replaceOnce(html, `/assets/${baseBundleName}`, `/assets/inde
 const styledHtml = replaceOnce(
   updatedHtml,
   '  </head>',
-  `    <link rel="stylesheet" href="/assets/brand-case.css" />\n    <link rel="stylesheet" href="/assets/brand-danmaku.css" />\n    <link rel="stylesheet" href="/assets/brand-product-motion.css${brandRevision}" />\n  </head>`,
+  `    <link rel="stylesheet" href="/assets/brand-case.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-danmaku.css" />\n    <link rel="stylesheet" href="/assets/brand-product-motion.css${brandRevision}" />\n  </head>`,
 );
 
 await Promise.all([

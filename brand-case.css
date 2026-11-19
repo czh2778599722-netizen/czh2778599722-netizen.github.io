@@ -37,6 +37,29 @@
   min-block-size: 26%;
 }
 
+.brand-case-film {
+  padding: clamp(24px, 5vw, 80px) clamp(16px, 5vw, 80px);
+  background: linear-gradient(#f0cc94, #fff5d7 9rem);
+}
+
+.brand-case-film > * {
+  display: block;
+  width: min(100%, 960px);
+  margin-inline: auto;
+}
+
+.brand-case-film h2 {
+  margin-block: 0 0.75em;
+  color: #784b26;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  line-height: 1.2;
+}
+
+.brand-case-film video {
+  aspect-ratio: 16 / 9;
+  background: #241b14;
+}
+
 @media (max-width: 680px), (prefers-reduced-motion: reduce) {
   .brand-case-hero {
     display: block;

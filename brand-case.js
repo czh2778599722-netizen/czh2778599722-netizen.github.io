@@ -102,6 +102,17 @@ export function createBrandCase(React) {
         products,
         showHint,
       })),
+      h('section', { className: 'brand-case-film', 'aria-labelledby': 'brand-film-title' },
+        h('h2', { id: 'brand-film-title' }, '中秋礼盒开箱'),
+        h('video', {
+          controls: true,
+          playsInline: true,
+          preload: 'none',
+          'aria-labelledby': 'brand-film-title',
+          poster: '/brand/gift-box-film-poster.webp',
+          src: '/brand/gift-box-film.mp4',
+        }),
+      ),
     );
   };
 }
