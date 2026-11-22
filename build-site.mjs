@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const output = join(root, 'site');
-const brandRevision = '?v=12';
+const brandRevision = '?v=13';
 const webp = (names) => names.split(' ').map((name) => `${name}.webp`);
 const rootFiles = await readdir(root);
 const assets = {
@@ -96,10 +96,12 @@ const updatedBundle = `import { createBrandCase } from "./brand-case.js${brandRe
   `import { unlockHouseSound } from "./brand-house-sound.js${brandRevision}";\n` +
   replacements.reduce((source, [original, replacement]) => replaceOnce(source, original, replacement), baseBundle);
 
-async function writeVersionedModule(file, dependency) {
-  const source = await readFile(join(root, file), 'utf8');
-  const updated = replaceOnce(source, `'./${dependency}'`, `'./${dependency}${brandRevision}'`);
-  await writeFile(join(output, 'assets', file), updated);
+async function writeVersionedModule(file, ...dependencies) {
+  let source = await readFile(join(root, file), 'utf8');
+  for (const dependency of dependencies) {
+    source = replaceOnce(source, `'./${dependency}'`, `'./${dependency}${brandRevision}'`);
+  }
+  await writeFile(join(output, 'assets', file), source);
 }
 const html = await readFile(join(root, 'index.html'), 'utf8');
 const updatedHtml = replaceOnce(html, `/assets/${baseBundleName}`, `/assets/index-brand.js${brandRevision}`);
@@ -112,6 +114,8 @@ const styledHtml = replaceOnce(
 await Promise.all([
   writeFile(join(output, 'assets', 'index-brand.js'), updatedBundle),
   writeVersionedModule('brand-case.js', 'brand-product-motion.js'),
+  writeVersionedModule('brand-mascot.js', 'brand-skin-gallery.js'),
+  writeVersionedModule('brand-skin-gallery.js', 'brand-skins-study.js', 'brand-skins-nature.js', 'brand-skins-reading.js', 'brand-skins-law.js'),
   writeVersionedModule('brand-product-motion.js', 'brand-house-motion.js'),
   writeVersionedModule('brand-house-motion.js', 'brand-house-sound.js'),
   writeFile(join(output, 'index.html'), styledHtml),

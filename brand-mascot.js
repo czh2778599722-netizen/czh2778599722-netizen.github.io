@@ -1,3 +1,5 @@
+import { createSkinGallery } from './brand-skin-gallery.js';
+
 const directory = '/brand/mascot/';
 const flightDuration = 2600;
 
@@ -12,6 +14,7 @@ const flight = Array.from({ length: 61 }, (_, index) => {
 
 export function createMascotCase(React) {
   const h = React.createElement;
+  const SkinGallery = createSkinGallery(React);
 
   function artwork(file, alt, height, eager = false) {
     return h('img', {
@@ -91,7 +94,7 @@ export function createMascotCase(React) {
       artwork('header.webp', 'IP一致性延展', 429, true),
       artwork('intro.webp', '领小麦系列角色合影', 1066, true),
       h(FlightStage),
-      artwork('skins.webp', '麦皮肤，八款领小麦角色造型', 1344),
+      h(SkinGallery),
       artwork('scenes.webp', '场景海报，领小麦在实验室、课堂、广场和森林的四种演绎', 3207),
     );
   };
