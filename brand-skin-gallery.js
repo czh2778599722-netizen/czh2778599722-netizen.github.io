@@ -21,6 +21,8 @@ const cards = [
   ['法治麦', '举起宪法宣读', 2000],
 ];
 
+export const skinNames = cards.map(([name]) => name);
+
 function readImage(file) {
   const image = new Image();
   image.src = artDirectory + file;
@@ -76,7 +78,7 @@ async function prepareCard(number, canvas) {
 export function createSkinGallery(React) {
   const h = React.createElement;
 
-  function SkinCard({ index, activeCard }) {
+  function SkinCard({ index, activeCard, onPlayStateChange }) {
     const button = React.useRef(null);
     const canvas = React.useRef(null);
     const prepared = React.useRef(null);
@@ -114,11 +116,15 @@ export function createSkinGallery(React) {
         cancelAnimationFrame(frame.current);
         if (button.current) delete button.current.dataset.playing;
         playing.current = null;
-        if (activeCard.current === stop) activeCard.current = null;
+        if (activeCard.current === stop) {
+          activeCard.current = null;
+          onPlayStateChange(false);
+        }
       };
       activeCard.current?.();
       activeCard.current = stop;
       playing.current = stop;
+      onPlayStateChange(true);
       try {
         const draw = await prepare();
         if (!button.current || playing.current !== stop) return;
@@ -155,11 +161,11 @@ export function createSkinGallery(React) {
     }, h('canvas', { ref: canvas, width: cardWidth, height: cardHeight, 'aria-hidden': true }));
   }
 
-  return function SkinGallery() {
+  return function SkinGallery({ onPlayStateChange }) {
     const activeCard = React.useRef(null);
     return h('section', { className: 'brand-skin-gallery', 'aria-label': '麦皮肤，八款领小麦互动卡片' },
       h('img', { className: 'brand-case-artwork', src: '/brand/mascot/skins.webp', alt: '', width: galleryWidth, height: galleryHeight, loading: 'lazy' }),
-      ...cards.map(([name], index) => h(SkinCard, { key: name, index, activeCard })),
+      ...cards.map(([name], index) => h(SkinCard, { key: name, index, activeCard, onPlayStateChange })),
     );
   };
 }
