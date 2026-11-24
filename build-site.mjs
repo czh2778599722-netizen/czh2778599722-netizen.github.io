@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const output = join(root, 'site');
-const brandRevision = '?v=14';
+const brandRevision = '?v=15';
 const webp = (names) => names.split(' ').map((name) => `${name}.webp`);
 const rootFiles = await readdir(root);
 const assets = {
@@ -35,6 +35,7 @@ await Promise.all(Object.entries(assets).map(async ([folder, files]) => {
 
 await cp(join(root, 'brand', 'exam-kit'), join(output, 'brand', 'exam-kit'), { recursive: true });
 await cp(join(root, 'brand', 'mascot'), join(output, 'brand', 'mascot'), { recursive: true });
+await cp(join(root, 'brand', 'portfolio-2026'), join(output, 'brand', 'portfolio-2026'), { recursive: true });
 
 function replaceOnce(source, original, replacement) {
   const index = source.indexOf(original);
@@ -60,12 +61,20 @@ const replacements = [
   ['name:`活动视觉项目`,x:.058', 'name:`品牌设计`,x:.058'],
   ['name:`文创设计`,x:.058', 'name:`IP一致性延展`,x:.058'],
   [
+    '[`#contact`,`联系我`]].map(([e,t])=>(0,p.jsxs)(`a`,{href:e,onClick:t=>h(t,{to:e})',
+    '[`#contact`,`联系我`],[`/`,`图册版`]].map(([e,t])=>(0,p.jsxs)(`a`,{href:e,onClick:e===`/`?void 0:t=>h(t,{to:e})',
+  ],
+  [
     'var we=[{id:`autumn-event`,number:1,title:`别暑迎秋`,en:`A New Season, A Shared Direction`,category:`活动视觉项目`,tag:`EVENT VISUAL / 2026`,subtitle:`会议视觉与伴手礼文创设计`,cover:`key-visual`,prototype:!1}',
-    'const BrandCase=createBrandCase(l),MascotCase=createMascotCase(l);\nvar we=[{id:`brand-design`,number:1,title:`品牌设计`,en:`Brand Design`,category:`品牌设计`,tag:`BRAND DESIGN / 2025`,subtitle:`在一起过中秋 · 逐星未来式`,cover:`/brand/directory-cover.jpg`,prototype:!1}',
+    'const BrandCase=createBrandCase(l),MascotCase=createMascotCase(l),PortfolioBoards=createPortfolioBoards(l);\nvar we=[{id:`brand-design`,number:1,title:`品牌设计`,en:`Brand Design`,category:`品牌设计`,tag:`BRAND DESIGN / 2025`,subtitle:`在一起过中秋 · 逐星未来式`,cover:`/brand/directory-cover.jpg`,prototype:!1}',
   ],
   [
     'id:`project-03`,number:3,title:`文创设计`,en:`Cultural & Creative Design`,category:`文创设计`,tag:`CULTURAL DESIGN / 04 COLLECTIONS`,subtitle:`草稿本系列 · 企业文化衫 · 中高考地推 · 品宣长图`,prototype:!1,contentPending:!0',
     'id:`project-03`,number:3,title:`IP一致性延展`,en:`Character IP Design`,category:`IP一致性延展`,tag:`CHARACTER IP / 2025`,subtitle:`领小麦 · 角色造型与场景海报`,cover:`/brand/mascot/intro.webp`,prototype:!1',
+  ],
+  [
+    'id:`project-04`,number:4,title:`其他设计`,en:`More Design Explorations`,category:`其他设计`,tag:`PROTOTYPE / COMING SOON`,subtitle:`原型占位 · 作品内容待补充`,prototype:!0',
+    'id:`project-04`,number:4,title:`其他设计`,en:`Other Design`,category:`其他设计`,tag:`OTHER DESIGN`,subtitle:`棒球服设计 · 产品手册`,cover:`/brand/portfolio-2026/5-1.webp`,prototype:!1',
   ],
   [
     'e.id===`project-03`?(0,p.jsx)(`img`,{src:`/cultural/notebook-series.webp`,alt:`草稿本、笔记本与改错本系列`,loading:`lazy`}):(0,p.jsx)(Ee,{project:e,asset:e.id===`project-02`?`may-holiday-head`:void 0})',
@@ -77,21 +86,32 @@ const replacements = [
   ],
   [
     'function Ee({project:e,asset:t,alt:n=``,lazy:r=!0}){return ',
-    'function Ee({project:e,asset:t,alt:n=``,lazy:r=!0}){return e.id===`brand-design`?(0,p.jsx)(`img`,{className:`brand-wall-cover`,src:e.cover,alt:`蓝天下的小屋中秋礼盒、月饼与礼品`,loading:r?`lazy`:`eager`}):',
+    'function Ee({project:e,asset:t,alt:n=``,lazy:r=!0}){return e.id===`brand-design`?(0,p.jsx)(`img`,{className:`brand-wall-cover`,src:e.cover,alt:`蓝天下的小屋中秋礼盒、月饼与礼品`,loading:r?`lazy`:`eager`}):e.id===`project-04`?(0,p.jsx)(`img`,{src:e.cover,alt:`棒球服设计`,loading:r?`lazy`:`eager`}):',
   ],
   [
     'e.id===`project-03`?`CULTURAL DESIGN`:`EVENT VISUAL CASE`',
-    'e.id===`project-03`?`CHARACTER IP DESIGN`:e.id===`brand-design`?`BRAND DESIGN`:`EVENT VISUAL CASE`',
+    'e.id===`project-03`?`CHARACTER IP DESIGN`:e.id===`project-04`?`OTHER DESIGN`:e.id===`brand-design`?`BRAND DESIGN`:`EVENT VISUAL CASE`',
   ],
   [
     'e.id===`project-03`?(0,p.jsx)(ge,{}):e.prototype?',
-    'e.id===`brand-design`?(0,p.jsx)(BrandCase,{}):e.id===`project-03`?(0,p.jsx)(MascotCase,{}):e.prototype?',
+    'e.id===`brand-design`?(0,p.jsx)(BrandCase,{}):e.id===`project-03`?(0,p.jsx)(MascotCase,{}):e.id===`project-04`?(0,p.jsx)(PortfolioBoards,{kind:`other`}):e.prototype?',
+  ],
+  [
+    'className:`operations-case`,children:[(0,p.jsxs)(`header`,{className:`operations-intro operations-width`',
+    'className:`operations-case`,children:[(0,p.jsx)(PortfolioBoards,{kind:`operations`}),(0,p.jsxs)(`header`,{className:`operations-intro operations-width`',
   ],
   ['${e.id===`autumn-event`?`活动视觉项目`:e.title}', '${e.title}'],
   ['e.id===`autumn-event`?(0,p.jsxs)(p.Fragment,{children:[`活动视觉`,(0,p.jsx)(`br`,{}),`项目`]}):e.title', 'e.title'],
+  [
+    '(0,u.createRoot)(document.getElementById(`root`))',
+    'const PortfolioBook=createPortfolioBook(l,we,De,unlockHouseSound);\n(0,u.createRoot)(document.getElementById(`root`))',
+  ],
+  ['children:(0,p.jsx)(Oe,{})', 'children:(0,p.jsx)(new URLSearchParams(location.search).get("view")==="interactive"?Oe:PortfolioBook,{})'],
 ];
 
 const updatedBundle = `import { createBrandCase } from "./brand-case.js${brandRevision}";\n` +
+  `import { createPortfolioBook } from "./brand-portfolio-book.js${brandRevision}";\n` +
+  `import { createPortfolioBoards } from "./brand-portfolio-cases.js${brandRevision}";\n` +
   `import { createMascotCase } from "./brand-mascot.js${brandRevision}";\n` +
   `import { unlockHouseSound } from "./brand-house-sound.js${brandRevision}";\n` +
   replacements.reduce((source, [original, replacement]) => replaceOnce(source, original, replacement), baseBundle);
@@ -108,7 +128,7 @@ const updatedHtml = replaceOnce(html, `/assets/${baseBundleName}`, `/assets/inde
 const styledHtml = replaceOnce(
   updatedHtml,
   '  </head>',
-  `    <link rel="stylesheet" href="/assets/brand-case.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-skin-hero.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-danmaku.css" />\n    <link rel="stylesheet" href="/assets/brand-product-motion.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-campaign-theme.css${brandRevision}" />\n  </head>`,
+  `    <link rel="stylesheet" href="/assets/brand-case.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-portfolio-book.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-skin-hero.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-danmaku.css" />\n    <link rel="stylesheet" href="/assets/brand-product-motion.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-campaign-theme.css${brandRevision}" />\n  </head>`,
 );
 
 await Promise.all([
