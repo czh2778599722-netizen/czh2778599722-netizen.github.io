@@ -60,6 +60,8 @@ export function createRecruitCarousel(React) {
     const goal = React.useRef(initial);
     const frame = React.useRef(0);
     const drag = React.useRef(null);
+    const hint = React.useRef(null);
+    const [showHint, setShowHint] = React.useState(false);
     const focusReader = React.useRef(false);
     const suppressClick = React.useRef(false);
     const prepare = React.useRef(null);
@@ -97,11 +99,25 @@ export function createRecruitCarousel(React) {
       return () => { mounted = false; prepare.current = null; observer.disconnect(); cancelAnimationFrame(frame.current); };
     }, []);
 
+    React.useEffect(() => {
+      if (!ready) return;
+      let timeout;
+      const observer = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) return;
+        setShowHint(true);
+        observer.disconnect();
+        timeout = setTimeout(() => setShowHint(false), 7500);
+      }, { threshold: 1, rootMargin: '0px 0px -5% 0px' });
+      observer.observe(hint.current);
+      return () => { observer.disconnect(); clearTimeout(timeout); };
+    }, [ready]);
+
     const draw = React.useCallback(value => {
       live.current = value;
       setPosition(value);
     }, []);
     const settle = React.useCallback(target => {
+      setShowHint(false);
       cancelAnimationFrame(frame.current);
       goal.current = target;
       const from = live.current;
@@ -197,6 +213,7 @@ export function createRecruitCarousel(React) {
       h('section', {
         ref: panel, className: 'recruit-carousel', 'aria-label': '公众号招聘长图展示', 'aria-roledescription': '轮播',
         'data-current': current, 'data-ready': ready || undefined, tabIndex: ready ? 0 : undefined,
+        'aria-describedby': ready ? 'recruit-gesture-hint' : undefined,
         style: { top: percent(stage.top, 2341), height: percent(stage.height, 2341) },
         onPointerDown: down, onPointerMove: move, onPointerUp: e => finish(e), onPointerCancel: e => finish(e, true),
         onLostPointerCapture: e => { if (e.target === e.currentTarget) finish(e, true); },
@@ -221,12 +238,16 @@ export function createRecruitCarousel(React) {
             key: slot, className: 'recruit-screen-slide', role: 'region',
             'data-active': settled || undefined, tabIndex: settled ? 0 : -1, 'aria-hidden': !settled || undefined,
             'aria-label': posters[wrap(slot)].title + '，上下滚动阅读完整长图',
+            onScroll: showHint ? () => setShowHint(false) : undefined,
             style: { transform: `translateX(${(slot - position) * 100}%)` },
           },
             h('img', { src: source(posters[wrap(slot)].src), onError: retryPoster, alt: '', draggable: false }))),
         ),
         h('img', { className: 'recruit-foreground', style: rect(90, 930, 1120, 1067), src: source(art + 'foreground.webp'), alt: '', draggable: false }),
         h('div', { className: 'recruit-heading', style: rect(600, 826, 720, 62), 'aria-hidden': true }, h('strong', null, poster.title), h('small', null, poster.subtitle)),
+        h('div', { id: 'recruit-gesture-hint', ref: hint, className: 'recruit-gesture-hint', 'data-visible': showHint || undefined },
+          h('span', null, h('b', { 'aria-hidden': true }, '↔'), '左右滑动换图'),
+          h('span', null, h('b', { 'aria-hidden': true }, '↕'), '屏内上下滑动看全图')),
         ...poster.tags.map(([cn, en], i) => h('div', { key: i, className: 'recruit-tag recruit-tag-' + (i + 1), 'aria-hidden': true },
           h('strong', null, cn), h('small', null, en))),
         ...[-2, -1, 1, 2].map(offset => {

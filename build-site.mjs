@@ -4,13 +4,13 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const output = join(root, 'site');
-const brandRevision = '?v=19';
+const brandRevision = '?v=20';
 const webp = (names) => names.split(' ').map((name) => `${name}.webp`);
 const rootFiles = await readdir(root);
 const assets = {
   cover: ['interactive-world.png'],
   assets: rootFiles.filter((file) => /^(?:index-|brand-).+\.(?:css|js)$/.test(file)),
-  fonts: ['alibaba-puhuiti-medium.woff2', 'alimama-shuhei-bold.woff2'],
+  fonts: ['alibaba-puhuiti-medium.woff2', 'alimama-shuhei-bold.woff2', 'campaign-display.woff2', 'campaign-font-OFL.txt'],
   autumn: webp('banner barrier cover custom-graphics gift-bag hero-detail key-visual name-card notebook project-introduction sign-in social stamps sticker-one sticker-two table-card vertical wayfinding'),
   campaign: webp('archive-1-1 archive-1-2 archive-1-3 archive-1-4 archive-2-1 archive-2-2 archive-2-3 archive-2-4 final-review-original finals-original national-day-original nine-subjects-original poster-1 poster-2 poster-3 warm-practice-original winter-breakthrough-original winter-warm-original'),
   cultural: webp('notebook-series'),
@@ -50,6 +50,10 @@ function replaceOnce(source, original, replacement) {
 const baseBundleName = 'index-DyPDV1vn.js';
 const baseBundle = await readFile(join(root, baseBundleName), 'utf8');
 const replacements = [
+  [
+    '(0,p.jsxs)(`h1`,{children:[`让信息被看见，`,(0,p.jsx)(`br`,{}),(0,p.jsx)(`span`,{children:`让设计连接行动。`})]})',
+    '(0,p.jsx)(`h1`,{children:`页面详情`})',
+  ],
   [
     '].map(([e,t,n=`webp`])=>({id:e,title:t,src:`/campaign/${e}.${n}`}))',
     '].map(([e,t])=>({id:e,title:t,src:`/campaign/${e}.webp`}))',
@@ -128,12 +132,13 @@ const updatedHtml = replaceOnce(html, `/assets/${baseBundleName}`, `/assets/inde
 const styledHtml = replaceOnce(
   updatedHtml,
   '  </head>',
+  `    <link rel="stylesheet" href="/assets/brand-marketing-gallery.css${brandRevision}" />\n` +
   `    <link rel="stylesheet" href="/assets/brand-case.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-portfolio-book.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-recruit-carousel.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-skin-hero.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-danmaku.css" />\n    <link rel="stylesheet" href="/assets/brand-product-motion.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-campaign-theme.css${brandRevision}" />\n  </head>`,
 );
 
 await Promise.all([
   writeFile(join(output, 'assets', 'index-brand.js'), updatedBundle),
-  writeVersionedModule('brand-portfolio-cases.js', 'brand-recruit-carousel.js'),
+  writeVersionedModule('brand-portfolio-cases.js', 'brand-recruit-carousel.js', 'brand-marketing-gallery.js'),
   writeVersionedModule('brand-case.js', 'brand-product-motion.js'),
   writeVersionedModule('brand-mascot.js', 'brand-skin-gallery.js', 'brand-skin-hero.js'),
   writeVersionedModule('brand-skin-gallery.js', 'brand-skins-study.js', 'brand-skins-nature.js', 'brand-skins-reading.js', 'brand-skins-law.js'),

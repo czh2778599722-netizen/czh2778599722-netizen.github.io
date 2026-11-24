@@ -21,11 +21,56 @@
   background: #141417;
 }
 
+.native-project-viewer:has(> .operations-case) > .viewer-nav {
+  box-sizing: border-box;
+  min-height: clamp(60px, 3.4vw, 88px);
+  padding: 4px clamp(14px, 1.15vw, 30px);
+  gap: 12px;
+  font-size: clamp(14px, 1.13vw, 29px);
+  line-height: 1.2;
+}
+.native-project-viewer:has(> .operations-case) > .viewer-nav > span {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  white-space: nowrap;
+}
+.native-project-viewer:has(> .operations-case) > .viewer-nav button {
+  justify-content: flex-end;
+  min-width: clamp(104px, 7.4vw, 192px);
+  min-height: 44px;
+  gap: clamp(8px, 1vw, 26px);
+  font-size: clamp(15px, 1.1vw, 28px);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.native-project-viewer:has(> .operations-case) > .viewer-nav button span {
+  font-size: clamp(24px, 1.55vw, 40px);
+  line-height: 1;
+}
+
 .operations-case {
   --campaign-accent: #d8c4ff;
   --campaign-label-surface: #21182e;
   color: var(--campaign-foreground);
   background: #000;
+}
+
+.native-project-viewer:has(> .operations-case) > :is(.viewer-nav, .viewer-end),
+.operations-case > :is(.operations-intro, .operations-tabs-wrap, [role="tabpanel"]),
+body:has(.native-project-viewer > .operations-case) .poster-lightbox {
+  --font-body: 'Campaign Display', 'Alibaba PuHuiTi Medium', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-heading: var(--font-body);
+  font-family: var(--font-body);
+}
+
+/* Web subset of Douyin Sans Bold. See /fonts/campaign-font-OFL.txt. */
+@font-face {
+  font-family: 'Campaign Display';
+  src: url('/fonts/campaign-display.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
 }
 
 .operations-case .poster-collection-longform {
@@ -45,7 +90,6 @@
 
 .operations-case :is(
   .operations-kicker,
-  .operations-intro h1 > span,
   .operations-intro > p,
   .operations-section-heading > div > span,
   .operations-section-heading > p,

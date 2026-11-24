@@ -1,4 +1,5 @@
 import { createRecruitCarousel } from './brand-recruit-carousel.js';
+import { createMarketingGallery } from './brand-marketing-gallery.js';
 
 const boards = {
   operations: [
@@ -19,12 +20,14 @@ const boards = {
 export function createPortfolioBoards(React) {
   const h = React.createElement;
   const RecruitCarousel = createRecruitCarousel(React);
+  const MarketingGallery = createMarketingGallery(React);
   return function PortfolioBoards({ kind }) {
     const pages = boards[kind];
     return h('section', { className: 'brand-case', 'aria-label': pages[0][1] },
       ...pages.map(([id, alt, height], index) => {
         const src = '/brand/portfolio-2026/' + id + '.webp';
         if (id === '4-2') return h(RecruitCarousel, { key: id, src, alt });
+        if (id === '4-3') return h(MarketingGallery, { key: id, src, alt });
         return h('img', {
           key: id, className: 'brand-case-artwork', src, alt, width: 1920, height,
           decoding: 'async', loading: index === 0 ? 'eager' : 'lazy',

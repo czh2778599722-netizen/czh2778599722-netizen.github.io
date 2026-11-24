@@ -1,0 +1,45 @@
+.marketing-gallery {
+  position: relative;
+  isolation: isolate;
+  container-type: inline-size;
+}
+.marketing-preview { position: absolute; inset: 0; pointer-events: none; }
+.marketing-screen, .marketing-foreground, .marketing-caption, .marketing-card, .marketing-load-status { position: absolute; }
+.marketing-screen {
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #fff;
+}
+.marketing-screen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding-block: 2.65cqw 4.3cqw;
+  object-fit: contain;
+}
+.marketing-foreground { display: block; max-width: none; }
+.marketing-caption, .marketing-load-status {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: #111;
+  background: #fff;
+  font: 700 clamp(10px, 1.875cqw, 36px)/1.15 'Alibaba PuHuiTi Medium', 'Microsoft YaHei', sans-serif;
+}
+.marketing-load-status { color: #92451c; font-size: max(8px, 1.1cqw); }
+.marketing-card {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 1cqw;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.marketing-card[aria-pressed="true"] { box-shadow: inset 0 0 0 max(2px, .19cqw) #2b75cc; }
+.marketing-card:focus-visible { outline: max(2px, .17cqw) solid #194387; outline-offset: 1px; }
+@media (hover: hover) {
+  .marketing-card:hover { box-shadow: inset 0 0 0 max(2px, .19cqw) #2b75cc; }
+}
