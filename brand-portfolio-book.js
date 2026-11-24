@@ -1,3 +1,5 @@
+import { createMobileAbout } from './brand-mobile-about.js';
+
 const art = '/brand/portfolio-2026/';
 const email = 'caozihui2021@163.com';
 const sections = [['home', '封面'], ['about', '简介'], ['collection', '作品目录'], ['contact', '封底']];
@@ -15,6 +17,7 @@ function bounds([x, y, width, height]) {
 
 export function createPortfolioBook(React, projects, ProjectViewer, unlockHouseSound) {
   const h = React.createElement;
+  const MobileAbout = createMobileAbout(React);
 
   function image(file, alt, eager = false) {
     return h('img', {
@@ -48,6 +51,7 @@ export function createPortfolioBook(React, projects, ProjectViewer, unlockHouseS
             image('cover', '2026 设计作品集封面，霓虹灯照亮桌上的复古电脑和彩色公仔', true),
           ),
           h('section', { id: 'about', className: 'portfolio-book-page', 'aria-label': '个人简介与工作经历' },
+            h(MobileAbout, { art, email }),
             h('a', { className: 'portfolio-book-enlarge', href: art + 'about.webp', target: '_blank', rel: 'noopener', 'aria-label': '查看原尺寸的个人简介与工作经历' },
               image('about', 'Hi，I am 曹子慧！个人简介、照片与工作经历')),
             h('p', { className: 'brand-case-title' }, '曹子慧，北京理工大学视觉传达设计本科，具备两年互联网视觉设计经验。在网易有道旗下的有道领世担任视觉设计师，负责咨询销售部与校招业务线。曾在高途教育科技集团担任视觉设计实习生。'),

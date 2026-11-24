@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const output = join(root, 'site');
-const brandRevision = '?v=21';
+const brandRevision = '?v=22';
 const webp = (names) => names.split(' ').map((name) => `${name}.webp`);
 const rootFiles = await readdir(root);
 const assets = {
@@ -132,12 +132,14 @@ const updatedHtml = replaceOnce(html, `/assets/${baseBundleName}`, `/assets/inde
 const styledHtml = replaceOnce(
   updatedHtml,
   '  </head>',
+  `    <link rel="stylesheet" href="/assets/brand-mobile-about.css${brandRevision}" />\n` +
   `    <link rel="stylesheet" href="/assets/brand-marketing-gallery.css${brandRevision}" />\n` +
   `    <link rel="stylesheet" href="/assets/brand-case.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-portfolio-book.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-recruit-carousel.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-skin-hero.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-danmaku.css" />\n    <link rel="stylesheet" href="/assets/brand-product-motion.css${brandRevision}" />\n    <link rel="stylesheet" href="/assets/brand-campaign-theme.css${brandRevision}" />\n  </head>`,
 );
 
 await Promise.all([
   writeFile(join(output, 'assets', 'index-brand.js'), updatedBundle),
+  writeVersionedModule('brand-portfolio-book.js', 'brand-mobile-about.js'),
   writeVersionedModule('brand-portfolio-cases.js', 'brand-recruit-carousel.js', 'brand-marketing-gallery.js'),
   writeVersionedModule('brand-case.js', 'brand-product-motion.js'),
   writeVersionedModule('brand-mascot.js', 'brand-skin-gallery.js', 'brand-skin-hero.js'),

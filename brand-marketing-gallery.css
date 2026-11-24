@@ -10,13 +10,29 @@
   overflow: hidden;
   background: #000;
 }
+.marketing-screen[data-scrollable] {
+  pointer-events: auto;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y pinch-zoom;
+  scrollbar-width: none;
+}
+.marketing-screen::-webkit-scrollbar { display: none; }
+.marketing-screen:focus-visible { outline: 2px solid #649dff; outline-offset: -2px; }
+.marketing-sheet {
+  box-sizing: border-box;
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  justify-content: center;
+}
+/* Let both ends of a long poster scroll clear of the camera and balloon artwork. */
+.marketing-screen[data-scrollable] .marketing-sheet { padding-block: 2.65cqw 5.8cqw; }
 .marketing-screen img {
   display: block;
   width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  padding-block: 2.65cqw 4.3cqw;
-  object-fit: contain;
+  height: auto;
+  flex: none;
 }
 .marketing-foreground { display: block; max-width: none; }
 .marketing-caption, .marketing-load-status {
