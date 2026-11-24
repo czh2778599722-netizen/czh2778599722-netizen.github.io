@@ -60,14 +60,23 @@ export function createRecruitCarousel(React) {
     const goal = React.useRef(initial);
     const frame = React.useRef(0);
     const drag = React.useRef(null);
+    const focusReader = React.useRef(false);
     const suppressClick = React.useRef(false);
     const prepare = React.useRef(null);
     const [sources, setSources] = React.useState(null);
     const ready = Boolean(sources);
     const [position, setPosition] = React.useState(initial);
+    const settled = Number.isInteger(position);
     const current = wrap(Math.round(position));
     const poster = posters[current];
     const source = file => sources?.[file] || file;
+
+    React.useLayoutEffect(() => {
+      if (settled && focusReader.current && document.activeElement === panel.current) {
+        panel.current.querySelector('.recruit-screen-slide[data-active]')?.focus({ preventScroll: true });
+      }
+      if (settled) focusReader.current = false;
+    }, [settled, current]);
 
     React.useEffect(() => {
       let mounted = true;
@@ -133,21 +142,34 @@ export function createRecruitCarousel(React) {
       if (!ready) { prepare.current?.(); return; }
       if (!event.isPrimary || event.button !== 0) return;
       suppressClick.current = false;
-      drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, started: performance.now(), active: false };
+      drag.current = {
+        id: event.pointerId, x: event.clientX, y: event.clientY, started: performance.now(), axis: null,
+        reader: event.pointerType === 'mouse' ? event.target.closest('.recruit-screen-slide[data-active]') : null,
+      };
     }
     function move(event) {
       const g = drag.current;
       if (!g || event.pointerId !== g.id) return;
       const dx = event.clientX - g.x, dy = event.clientY - g.y;
-      if (!g.active) {
+      if (!g.axis) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) < 6) return;
-        if (Math.abs(dy) >= Math.abs(dx)) { drag.current = null; return; }
-        cancelAnimationFrame(frame.current);
-        g.active = true;
-        g.from = live.current;
-        g.startIndex = Math.round(g.from);
+        if (Math.abs(dy) >= Math.abs(dx)) {
+          // Touch and trackpad reading use the native scroll container.
+          if (!g.reader) { drag.current = null; return; }
+          g.axis = 'vertical';
+          g.startTop = g.reader.scrollTop;
+        } else {
+          g.axis = 'horizontal';
+          cancelAnimationFrame(frame.current);
+          g.from = live.current;
+          g.startIndex = Math.round(g.from);
+        }
         panel.current.setPointerCapture(event.pointerId);
         panel.current.dataset.dragging = 'true';
+      }
+      if (g.axis === 'vertical') {
+        g.reader.scrollTop = g.startTop - dy;
+        return;
       }
       const spacing = panel.current.clientWidth * .238;
       draw(g.from - Math.max(-1, Math.min(1, dx / spacing)));
@@ -157,8 +179,9 @@ export function createRecruitCarousel(React) {
       if (!g || g.id !== event.pointerId) return;
       drag.current = null;
       delete panel.current.dataset.dragging;
-      if (!g.active) return;
+      if (!g.axis) return;
       suppressClick.current = true;
+      if (g.axis === 'vertical') return;
       const dx = event.clientX - g.x;
       const distance = Math.abs(dx);
       const flick = distance > 12 && distance / Math.max(1, performance.now() - g.started) > .4;
@@ -167,6 +190,7 @@ export function createRecruitCarousel(React) {
     }
 
     const center = Math.floor(position);
+    const screens = settled ? [center] : [center, center + 1];
     const items = Array.from({ length: 7 }, (_, i) => center + i - 3);
     return h('div', { className: 'recruit-board' },
       h('img', { className: 'brand-case-artwork', src: ready ? source(art + 'board.webp') : src, alt, width: 1920, height: 2341, decoding: 'async', loading: 'lazy' }),
@@ -176,19 +200,29 @@ export function createRecruitCarousel(React) {
         style: { top: percent(stage.top, 2341), height: percent(stage.height, 2341) },
         onPointerDown: down, onPointerMove: move, onPointerUp: e => finish(e), onPointerCancel: e => finish(e, true),
         onLostPointerCapture: e => { if (e.target === e.currentTarget) finish(e, true); },
-        onPointerLeave: () => { if (!drag.current?.active) drag.current = null; },
+        onPointerLeave: () => { if (!drag.current?.axis) drag.current = null; },
         onClickCapture: e => { if (suppressClick.current && e.detail) { suppressClick.current = false; e.stopPropagation(); } },
         onKeyDown: e => {
           if (!ready || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
-          e.preventDefault(); settle(goal.current + (e.key === 'ArrowLeft' ? -1 : 1));
+          e.preventDefault();
+          if (e.target.closest('.recruit-screen-slide')) {
+            focusReader.current = true;
+            panel.current.focus({ preventScroll: true });
+          }
+          settle(goal.current + (e.key === 'ArrowLeft' ? -1 : 1));
         },
       }, ready && h(React.Fragment, null,
         h('div', { className: 'recruit-preview-window', 'aria-hidden': true },
           ...items.map(slot => h('div', { key: slot, className: 'recruit-preview', style: previewStyle(slot - position) },
             h('img', { src: source(posters[wrap(slot)].src), onError: retryPoster, alt: '', draggable: false }))),
         ),
-        h('div', { className: 'recruit-screen', style: rect(screen.x, screen.y, screen.width, screen.height), 'aria-hidden': true },
-          ...[center, center + 1].map(slot => h('div', { key: slot, className: 'recruit-screen-slide', style: { transform: `translateX(${(slot - position) * 100}%)` } },
+        h('div', { className: 'recruit-screen', style: rect(screen.x, screen.y, screen.width, screen.height) },
+          ...screens.map(slot => h('div', {
+            key: slot, className: 'recruit-screen-slide', role: 'region',
+            'data-active': settled || undefined, tabIndex: settled ? 0 : -1, 'aria-hidden': !settled || undefined,
+            'aria-label': posters[wrap(slot)].title + '，上下滚动阅读完整长图',
+            style: { transform: `translateX(${(slot - position) * 100}%)` },
+          },
             h('img', { src: source(posters[wrap(slot)].src), onError: retryPoster, alt: '', draggable: false }))),
         ),
         h('img', { className: 'recruit-foreground', style: rect(90, 930, 1120, 1067), src: source(art + 'foreground.webp'), alt: '', draggable: false }),

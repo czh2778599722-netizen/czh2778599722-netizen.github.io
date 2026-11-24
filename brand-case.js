@@ -101,6 +101,7 @@ export function createBrandCase(React) {
   function MidAutumnCase() {
     return h('article', { className: 'brand-case' },
       h('h1', { className: 'brand-case-title' }, '在一起过中秋'),
+      artwork(['portfolio-2026/1-0.webp', '品牌设计｜提炼品牌符号，延展至包装与周边', 1920, 429], true),
       h('div', { className: 'brand-case-artboards' },
         artwork(caseCover, true),
         h('div', { className: 'brand-case-hero' },
