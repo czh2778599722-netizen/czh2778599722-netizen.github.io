@@ -3,6 +3,8 @@ import { createMobileAbout } from './brand-mobile-about.js';
 const art = '/brand/portfolio-2026/';
 const release = new URL(import.meta.url).search;
 const email = 'caozihui2021@163.com';
+const phone = { number: '153-6905-1667', href: 'tel:+8615369051667' };
+const wechatQR = art + 'wechat-qr.png';
 const sections = [['home', '封面'], ['about', '简介'], ['collection', '作品目录'], ['contact', '封底']];
 const phoneLayout = '(max-width: 767px), (orientation: landscape) and (pointer: coarse) and (max-width: 960px) and (max-height: 540px)';
 const directoryCards = [
@@ -74,7 +76,7 @@ export function createPortfolioBook(React, projects, ProjectViewer, unlockHouseS
               h('img', { className: 'portfolio-book-art', src: art + 'about.webp', width: 1920, height: 1080,
                 alt: 'Hi，I am 曹子慧！个人简介、照片与工作经历', loading: 'lazy', decoding: 'async' })),
             h('p', { className: 'brand-case-title' }, '曹子慧，北京理工大学视觉传达设计本科，具备两年互联网视觉设计经验。在网易有道旗下的有道领世担任视觉设计师，负责咨询销售部与校招业务线。曾在高途教育科技集团担任视觉设计实习生。'),
-            contactLink([1031, 165, 264, 64], 'tel:+8615369051667', '致电曹子慧，153-6905-1667'),
+            contactLink([1031, 165, 264, 64], phone.href, '致电曹子慧，' + phone.number),
             contactLink([1320, 165, 382, 64], 'mailto:' + email, '发送邮件至 ' + email),
           ),
           h('section', { id: 'collection', className: 'portfolio-book-page', 'aria-label': '作品目录' },
@@ -90,12 +92,16 @@ export function createPortfolioBook(React, projects, ProjectViewer, unlockHouseS
             h(BookBoard, { file: 'closing', alt: '封底，Thanks！左侧附有微信联系二维码' },
               ready => h('div', { className: ready ? 'book-contact-hotspots' : 'book-contact-text' },
                 !ready && h('strong', null, '联系我'),
-                h('a', { className: ready ? 'portfolio-book-hotspot portfolio-book-contact' : undefined,
-                  style: ready ? bounds([493, 69, 267, 36]) : undefined, href: 'mailto:' + email, 'aria-label': '发送邮件至 ' + email }, ready ? null : email),
+                ready && contactLink([493, 69, 267, 36], 'mailto:' + email, '发送邮件至 ' + email),
                 h('a', { className: ready ? 'portfolio-book-hotspot portfolio-book-qr' : undefined,
-                  style: ready ? bounds([100, 549, 206, 206]) : undefined, href: art + 'wechat-qr.png', target: '_blank', rel: 'noopener',
-                  'aria-label': '放大微信联系二维码' }, ready ? null : '查看微信二维码'),
+                  style: ready ? bounds([100, 539, 304, 304]) : undefined, href: wechatQR, target: '_blank', rel: 'noopener',
+                  'aria-label': '放大微信联系二维码' },
+                ready ? h('img', { src: wechatQR, alt: '', width: 616, height: 616 }) : '查看微信二维码'),
               )),
+            h('address', { className: 'book-contact-details' },
+              h('a', { href: phone.href }, h('span', null, '电话'), h('strong', null, phone.number)),
+              h('a', { href: 'mailto:' + email }, h('span', null, '邮箱'), h('strong', null, email)),
+            ),
           ),
         ),
       ),
