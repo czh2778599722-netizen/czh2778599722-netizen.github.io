@@ -2,6 +2,7 @@ import { createSkinHero } from './brand-skin-hero.js';
 import { createSkinGallery, skinNames } from './brand-skin-gallery.js';
 
 const directory = '/brand/mascot/';
+const release = new URL(import.meta.url).search;
 
 export function createMascotCase(React) {
   const h = React.createElement;
@@ -11,7 +12,7 @@ export function createMascotCase(React) {
   function artwork(file, alt, height, eager = false) {
     return h('img', {
       className: 'brand-case-artwork',
-      src: directory + file,
+      src: directory + file + release,
       alt,
       width: 1920,
       height,
