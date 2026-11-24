@@ -1,3 +1,5 @@
+import { createRecruitCarousel } from './brand-recruit-carousel.js';
+
 const boards = {
   operations: [
     ['4-0', '运营设计', 429],
@@ -16,19 +18,18 @@ const boards = {
 
 export function createPortfolioBoards(React) {
   const h = React.createElement;
+  const RecruitCarousel = createRecruitCarousel(React);
   return function PortfolioBoards({ kind }) {
     const pages = boards[kind];
     return h('section', { className: 'brand-case', 'aria-label': pages[0][1] },
-      ...pages.map(([id, alt, height], index) => h('img', {
-        key: id,
-        className: 'brand-case-artwork',
-        src: '/brand/portfolio-2026/' + id + '.webp',
-        alt,
-        width: 1920,
-        height,
-        decoding: 'async',
-        loading: index === 0 ? 'eager' : 'lazy',
-      })),
+      ...pages.map(([id, alt, height], index) => {
+        const src = '/brand/portfolio-2026/' + id + '.webp';
+        if (id === '4-2') return h(RecruitCarousel, { key: id, src, alt });
+        return h('img', {
+          key: id, className: 'brand-case-artwork', src, alt, width: 1920, height,
+          decoding: 'async', loading: index === 0 ? 'eager' : 'lazy',
+        });
+      }),
     );
   };
 }
