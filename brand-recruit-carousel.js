@@ -31,10 +31,25 @@ function previewStyle(offset) {
   return { ...box, height: 'auto', maxHeight: box.height, opacity: 1 - .3 * Math.min(1, Math.max(0, Math.abs(offset) - 1)) };
 }
 
-function preload(src) {
-  const img = new Image();
-  img.src = src;
-  return img.decode();
+async function preload(src) {
+  const image = new Image();
+  image.src = src;
+  try {
+    await image.decode();
+  } catch {
+    image.src = src + '?reload=1';
+    await image.decode();
+  }
+  return [src, image.src];
+}
+
+function retryPoster(event) {
+  const img = event.currentTarget;
+  const url = new URL(img.src);
+  if (!url.searchParams.has('reload')) {
+    url.searchParams.set('reload', '1');
+    img.src = url.href;
+  }
 }
 
 export function createRecruitCarousel(React) {
@@ -46,23 +61,31 @@ export function createRecruitCarousel(React) {
     const frame = React.useRef(0);
     const drag = React.useRef(null);
     const suppressClick = React.useRef(false);
-    const [ready, setReady] = React.useState(false);
+    const prepare = React.useRef(null);
+    const [sources, setSources] = React.useState(null);
+    const ready = Boolean(sources);
     const [position, setPosition] = React.useState(initial);
     const current = wrap(Math.round(position));
     const poster = posters[current];
+    const source = file => sources?.[file] || file;
 
     React.useEffect(() => {
       let mounted = true;
       let loading = false;
-      const observer = new IntersectionObserver(([entry]) => {
-        if (!entry.isIntersecting || loading) return;
+      function load() {
+        if (!mounted || loading) return;
         loading = true;
-        Promise.all([art + 'board.webp', art + 'foreground.webp', ...posters.map(p => p.src)].map(preload))
-          .then(() => { if (mounted) setReady(true); observer.disconnect(); })
+        // The fixed art and initial screen are sufficient to start. Neighbouring posters load independently.
+        Promise.all([art + 'board.webp', art + 'foreground.webp', posters[initial].src].map(preload))
+          .then(entries => { if (mounted) setSources(Object.fromEntries(entries)); observer.disconnect(); })
           .catch(() => { loading = false; }); // The exported board stays visible if an asset fails.
+      }
+      prepare.current = load;
+      const observer = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) load();
       }, { rootMargin: '650px 0px' });
       observer.observe(panel.current);
-      return () => { mounted = false; observer.disconnect(); cancelAnimationFrame(frame.current); };
+      return () => { mounted = false; prepare.current = null; observer.disconnect(); cancelAnimationFrame(frame.current); };
     }, []);
 
     const draw = React.useCallback(value => {
@@ -107,7 +130,8 @@ export function createRecruitCarousel(React) {
     }, [ready, settle]);
 
     function down(event) {
-      if (!ready || !event.isPrimary || event.button !== 0) return;
+      if (!ready) { prepare.current?.(); return; }
+      if (!event.isPrimary || event.button !== 0) return;
       suppressClick.current = false;
       drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, started: performance.now(), active: false };
     }
@@ -145,7 +169,7 @@ export function createRecruitCarousel(React) {
     const center = Math.floor(position);
     const items = Array.from({ length: 7 }, (_, i) => center + i - 3);
     return h('div', { className: 'recruit-board' },
-      h('img', { className: 'brand-case-artwork', src: ready ? art + 'board.webp' : src, alt, width: 1920, height: 2341, decoding: 'async', loading: 'lazy' }),
+      h('img', { className: 'brand-case-artwork', src: ready ? source(art + 'board.webp') : src, alt, width: 1920, height: 2341, decoding: 'async', loading: 'lazy' }),
       h('section', {
         ref: panel, className: 'recruit-carousel', 'aria-label': '公众号招聘长图展示', 'aria-roledescription': '轮播',
         'data-current': current, 'data-ready': ready || undefined, tabIndex: ready ? 0 : undefined,
@@ -161,13 +185,13 @@ export function createRecruitCarousel(React) {
       }, ready && h(React.Fragment, null,
         h('div', { className: 'recruit-preview-window', 'aria-hidden': true },
           ...items.map(slot => h('div', { key: slot, className: 'recruit-preview', style: previewStyle(slot - position) },
-            h('img', { src: posters[wrap(slot)].src, alt: '', draggable: false }))),
+            h('img', { src: source(posters[wrap(slot)].src), onError: retryPoster, alt: '', draggable: false }))),
         ),
         h('div', { className: 'recruit-screen', style: rect(screen.x, screen.y, screen.width, screen.height), 'aria-hidden': true },
           ...[center, center + 1].map(slot => h('div', { key: slot, className: 'recruit-screen-slide', style: { transform: `translateX(${(slot - position) * 100}%)` } },
-            h('img', { src: posters[wrap(slot)].src, alt: '', draggable: false }))),
+            h('img', { src: source(posters[wrap(slot)].src), onError: retryPoster, alt: '', draggable: false }))),
         ),
-        h('img', { className: 'recruit-foreground', style: rect(90, 930, 1120, 1067), src: art + 'foreground.webp', alt: '', draggable: false }),
+        h('img', { className: 'recruit-foreground', style: rect(90, 930, 1120, 1067), src: source(art + 'foreground.webp'), alt: '', draggable: false }),
         h('div', { className: 'recruit-heading', style: rect(600, 826, 720, 62), 'aria-hidden': true }, h('strong', null, poster.title), h('small', null, poster.subtitle)),
         ...poster.tags.map(([cn, en], i) => h('div', { key: i, className: 'recruit-tag recruit-tag-' + (i + 1), 'aria-hidden': true },
           h('strong', null, cn), h('small', null, en))),
