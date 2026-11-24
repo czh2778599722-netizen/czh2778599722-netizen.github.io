@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const output = join(root, 'site');
-const brandRevision = '?v=20';
+const brandRevision = '?v=21';
 const webp = (names) => names.split(' ').map((name) => `${name}.webp`);
 const rootFiles = await readdir(root);
 const assets = {

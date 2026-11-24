@@ -8,7 +8,7 @@
 .marketing-screen {
   box-sizing: border-box;
   overflow: hidden;
-  background: #fff;
+  background: #000;
 }
 .marketing-screen img {
   display: block;
